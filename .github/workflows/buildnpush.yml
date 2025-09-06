@@ -50,3 +50,15 @@ jobs:
         run: |
           docker push justscroll/shorturlsvc:latest
           docker push justscroll/shorturlsvc:${{ steps.tag.outputs.IMAGE_TAG }}
+      
+      - name: Update deployment manifests
+        run: |
+          # Update deployment with new image tag
+          sed -i "s|justscroll/shorturlsvc:.*|justscroll/shorturlsvc:${{ steps.tag.outputs.IMAGE_TAG }}|g" _infra/deployment.yaml
+      
+      - name: Commit and push changes
+        run: |
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+          git add _infra/
+          git diff --staged --quiet || (git commit -m "Update shorturlsvc image to ${{ steps.tag.outputs.IMAGE_TAG }}" && git push)
