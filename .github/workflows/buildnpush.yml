@@ -1,0 +1,54 @@
+name: Build and Push Short URL Service
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [ main ]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.9'
+      
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+      
+      - name: Run tests
+        run: |
+          python -m unittest test_app.py -v
+
+  build-and-push:
+    needs: test
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+      - name: Generate image tag
+        id: tag
+        run: |
+          echo "IMAGE_TAG=${GITHUB_SHA:0:7}" >> $GITHUB_OUTPUT
+      
+      - name: Log in to Docker Hub
+        run: echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin
+      
+      - name: Build Docker Image
+        run: |
+          docker build -t justscroll/shorturlsvc:latest .
+          docker build -t justscroll/shorturlsvc:${{ steps.tag.outputs.IMAGE_TAG }} .
+      
+      - name: Push Docker Images
+        run: |
+          docker push justscroll/shorturlsvc:latest
+          docker push justscroll/shorturlsvc:${{ steps.tag.outputs.IMAGE_TAG }}
