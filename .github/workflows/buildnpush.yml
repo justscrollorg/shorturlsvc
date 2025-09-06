@@ -2,8 +2,6 @@ name: Build and Push Short URL Service
 
 on:
   workflow_dispatch:
-  push:
-    branches: [ main ]
 
 jobs:
   test:
