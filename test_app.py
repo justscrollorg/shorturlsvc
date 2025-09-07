@@ -13,7 +13,7 @@ class TestApp(unittest.TestCase):
         """Test the GET / endpoint"""
         response = self.app.get('/')
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(response.data.decode('utf-8'), 'Hello World')
+        self.assertEqual(response.data.decode('utf-8'), 'Hello World from Germany')
     
     def test_log_message_post_success(self):
         """Test the POST /message endpoint with valid data"""
