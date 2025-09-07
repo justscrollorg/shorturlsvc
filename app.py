@@ -9,8 +9,8 @@ app = Flask(__name__)
 
 @app.route('/', methods=['GET'])
 def hello_world():
-    """Simple GET endpoint that returns Hello World"""
-    return "Hello World"
+    """Simple GET endpoint that returns Hello World from Germany"""
+    return "Hello World from Germany"
 
 @app.route('/message', methods=['POST'])
 def log_message():
